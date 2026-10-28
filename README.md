@@ -1,168 +1,83 @@
-# \# DevOps Demo: Docker \& Monitoring
+# DevOps Demo: Docker & Monitoring
 
-# 
+A simple DevOps showcase project featuring a Flask application containerized with Docker, monitored by Prometheus, and visualized in Grafana. System and container metrics are collected using Node Exporter and cAdvisor.
 
-# A simple DevOps showcase project featuring a Flask application containerized with Docker, monitored by Prometheus, and visualized in Grafana. System and container metrics are collected using Node Exporter and cAdvisor.
+## Project Structure
 
-# 
+```text
+devops-demo/
+├── app/
+│   ├── app.py              # Flask app with Prometheus metrics
+│   ├── Dockerfile
+│   └── requirements.txt
+├── monitoring/
+│   ├── prometheus.yml      # Scrape configuration
+│   └── grafana/
+│       └── provisioning/
+│           ├── datasources/
+│           │   └── prometheus.yml
+│           └── dashboards/
+│               ├── dashboard.yml
+│               └── demo.json   # Pre-built dashboard
+├── docker-compose.yml
+└── README.md
+```
 
-# \## Project Structure
+## Quick Start
 
-# 
+### 1. Clone the repository
 
-# ```text
+Replace `YOUR_USERNAME` with your GitHub username.
 
-# devops-demo/
+```bash
+git clone https://github.com/YOUR_USERNAME/devops-demo.git
+cd devops-demo
+```
 
-# ├── app/
+### 2. Build and start the containers
 
-# │   ├── app.py              # Flask app with Prometheus metrics
+```bash
+docker compose up -d --build
+```
 
-# │   ├── Dockerfile
+### 3. Access the services
 
-# │   └── requirements.txt
+Once the containers are running, access the services at the following URLs:
 
-# ├── monitoring/
+| Service    | URL                                            | Credentials          |
+|------------|------------------------------------------------|----------------------|
+| Flask App  | [http://localhost:5000](http://localhost:5000) | —                    |
+| Prometheus | [http://localhost:9090](http://localhost:9090) | —                    |
+| Grafana    | [http://localhost:3000](http://localhost:3000) | `admin` / `admin123` |
 
-# │   ├── prometheus.yml      # Scrape configuration
+> **Note:** The Grafana credentials above assume your Docker Compose configuration sets these default credentials. Change them before exposing Grafana to an untrusted network.
 
-# │   └── grafana/
+## Generating Traffic
 
-# │       └── provisioning/
+To populate the Grafana dashboard with metrics, generate some basic traffic using the following command:
 
-# │           ├── datasources/
+```bash
+for i in {1..20}; do
+  curl http://localhost:5000/
+  curl http://localhost:5000/api/data
+  curl http://localhost:5000/health
+done
+```
 
-# │           │   └── prometheus.yml
+After generating traffic, open Grafana and inspect your dashboard to view the collected metrics.
 
-# │           └── dashboards/
+## Teardown
 
-# │               ├── dashboard.yml
+Stop and remove the containers:
 
-# │               └── demo.json   # Pre-built dashboard
+```bash
+docker compose down
+```
 
-# ├── docker-compose.yml
+To also remove persistent data volumes:
 
-# └── README.md
+```bash
+docker compose down -v
+```
 
-# ```
-
-# 
-
-# \## Quick Start
-
-# 
-
-# \### 1. Clone the repository
-
-# 
-
-# Replace `YOUR\_USERNAME` with your GitHub username.
-
-# 
-
-# ```bash
-
-# git clone https://github.com/YOUR\_USERNAME/devops-demo.git
-
-# cd devops-demo
-
-# ```
-
-# 
-
-# \### 2. Build and start the containers
-
-# 
-
-# ```bash
-
-# docker compose up -d --build
-
-# ```
-
-# 
-
-# \### 3. Access the services
-
-# 
-
-# Once the containers are running, access the services at the following URLs:
-
-# 
-
-# | Service | URL | Credentials |
-
-# |---|---|---|
-
-# | Flask App | \[http://localhost:5000](http://localhost:5000) | — |
-
-# | Prometheus | \[http://localhost:9090](http://localhost:9090) | — |
-
-# | Grafana | \[http://localhost:3000](http://localhost:3000) | `admin` / `admin123` |
-
-# 
-
-# > \*\*Note:\*\* The Grafana credentials above assume your Docker Compose configuration sets these default credentials. Change them before exposing Grafana to an untrusted network.
-
-# 
-
-# \## Generating Traffic
-
-# 
-
-# To populate the Grafana dashboard with metrics, generate some basic traffic using the following command:
-
-# 
-
-# ```bash
-
-# for i in {1..20}; do
-
-# &#x20; curl http://localhost:5000/
-
-# &#x20; curl http://localhost:5000/api/data
-
-# &#x20; curl http://localhost:5000/health
-
-# done
-
-# ```
-
-# 
-
-# After generating traffic, open Grafana and inspect your dashboard to view the collected metrics.
-
-# 
-
-# \## Teardown
-
-# 
-
-# Stop and remove the containers:
-
-# 
-
-# ```bash
-
-# docker compose down
-
-# ```
-
-# 
-
-# To also remove persistent data volumes:
-
-# 
-
-# ```bash
-
-# docker compose down -v
-
-# ```
-
-# 
-
-# > \*\*Warning:\*\* The `-v` option deletes the Compose-managed persistent volumes, which may contain your Prometheus or Grafana data.
-
-
-
+> **Warning:** The `-v` option deletes the Compose-managed persistent volumes, which may contain your Prometheus or Grafana data.
