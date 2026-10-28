@@ -1,0 +1,94 @@
+{
+  "title": "DevOps Demo Dashboard",
+  "uid": "devops-demo",
+  "schemaVersion": 36,
+  "version": 2,
+  "refresh": "10s",
+  "tags": ["docker", "devops"],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Total App Requests",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "options": { "colorMode": "background" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": 0 }] } } },
+      "targets": [{ "expr": "sum(app_requests_total)", "legendFormat": "Requests" }]
+    },
+    {
+      "id": 2,
+      "title": "App Request Rate",
+      "type": "timeseries",
+      "gridPos": { "x": 4, "y": 0, "w": 20, "h": 8 },
+      "targets": [{ "expr": "rate(app_requests_total[1m])", "legendFormat": "{{endpoint}} {{status}}" }]
+    },
+    {
+      "id": 3,
+      "title": "Avg Latency (ms)",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 4, "w": 4, "h": 4 },
+      "fieldConfig": { "defaults": { "unit": "ms", "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": 0 }, { "color": "yellow", "value": 100 }, { "color": "red", "value": 500 }] } } },
+      "targets": [{ "expr": "rate(app_request_latency_seconds_sum[1m]) / rate(app_request_latency_seconds_count[1m]) * 1000", "legendFormat": "Latency" }]
+    },
+    {
+      "id": 10,
+      "title": "Container CPU Usage %",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } },
+      "targets": [{
+        "expr": "rate(container_cpu_usage_seconds_total{name!='',name!~'.*cadvisor.*'}[1m]) * 100",
+        "legendFormat": "{{name}}"
+      }]
+    },
+    {
+      "id": 11,
+      "title": "Container Memory Usage",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "bytes" } },
+      "targets": [{
+        "expr": "container_memory_working_set_bytes{name!='',name!~'.*cadvisor.*'}",
+        "legendFormat": "{{name}}"
+      }]
+    },
+    {
+      "id": 12,
+      "title": "Container Network RX (bytes/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "Bps" } },
+      "targets": [{
+        "expr": "rate(container_network_receive_bytes_total{name!=''}[1m])",
+        "legendFormat": "{{name}}"
+      }]
+    },
+    {
+      "id": 13,
+      "title": "Container Network TX (bytes/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "Bps" } },
+      "targets": [{
+        "expr": "rate(container_network_transmit_bytes_total{name!=''}[1m])",
+        "legendFormat": "{{name}}"
+      }]
+    },
+    {
+      "id": 20,
+      "title": "Host CPU Usage %",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 24, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } },
+      "targets": [{ "expr": "100 - (avg(rate(node_cpu_seconds_total{mode='idle'}[1m])) * 100)", "legendFormat": "CPU %" }]
+    },
+    {
+      "id": 21,
+      "title": "Host Memory Usage %",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 24, "w": 12, "h": 8 },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100 } },
+      "targets": [{ "expr": "(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100", "legendFormat": "Memory %" }]
+    }
+  ]
+}
